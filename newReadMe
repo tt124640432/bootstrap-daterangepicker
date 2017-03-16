@@ -1,0 +1,110 @@
+1.直接进入到js实例化部分:
+
+复制代码
+ 1 function timePicker(){
+ 2     var option={
+ 3         locale:{
+ 4             fromLabel: '开始日期',
+ 5             toLabel: '结束日期'
+ 6         },
+ 7         maxDate:new Date(new Date().getFullYear()+'-'+(new Date().getMonth()+1)+'-'+(new Date().getDate()+1)),//双日历允许最大的结束日期
+           opens:'left',//日历与输入框的对其方式,当前为右对齐
+ 8         //maxDate:moment(),//设置成moment(),有一个bug,那就是不能选择今天(比如2016-7-21)
+ 9         //dateLimit:{//起止时间允许的范围
+10         //    days:30
+11         //},
+12         showDropdowns : true//这个属性可以实现下拉选择年份
+13     };
+14     $('#calenderAccount').daterangepicker(option);
+15     setTimeout(function () {
+16        17         
+18         $('#calenderImg').click(function (e) {
+19             if(e.stopPropagation()){
+20                 e.stopPropagation();
+21             }else if(e.cancelBubble){
+22                 e.cancelBubble=true
+23             }
+24             $('#calenderAccount').trigger('click')
+25         });
+26         $('.clearInputTime').click(function () {//实现清空的功能
+27             $('#calenderAccount').val('');
+28             $('#startTime').val('');
+29             $('#endTime').val('');
+30             $('.cancelBtn ').trigger('click')
+31         })
+32     },400);
+33 }
+
+2.由于配置参数里面并没有清空按钮,但是项目为了实现这一个功能,所以自己在源码里面添加了一行,增加了一个清空按钮:
+
+
+ 1 var DRPTemplate = '<div class="daterangepicker dropdown-menu">' +
+ 2 
+ 3             '<div class="ranges">' +
+ 4             '<div class="range_inputs">' +
+ 5             '<div class="daterangepicker_start_input">' +
+ 6             '<label for="daterangepicker_start"></label>' +
+ 7             '<input class="input-mini" type="text" name="daterangepicker_start" value="" disabled="disabled" />' +
+ 8             '</div>' +
+ 9             '<div class="daterangepicker_end_input">' +
+10             '<label for="daterangepicker_end"></label>' +
+11             '<input class="input-mini" type="text" name="daterangepicker_end" value="" disabled="disabled" />' +
+12             '</div>' +
+13             '<button class="applyBtn" disabled="disabled"></button>&nbsp;' +
+14             '<button class="cancelBtn btnDone"></button>' +
+15             '<button class="clearInputTime" style="float: right;margin-right: 10px">清空</button>' +
+16             '</div>' +
+17             '</div>' +
+18             '<div class="clear"></div>' +
+19             '<div class="calendar left"></div>' +
+20             '<div class="calendar right"></div>' +
+21             '</div>';
+
+
+点击上方的input框,会弹出双日历选择器,选择了日期之后,需要点击确定,输入框内才会有值,如果需要清空输入框的值,只需要再次激活日历选择器,点击清空即可
+
+更多详细参数请参考:
+
+http://bootstrap-datepicker.readthedocs.io/en/latest/options.html
+
+或者参考源码:daterangepicker.js里面的下列代码:
+
+
+setOptions: function(options, callback) {
+
+            this.startDate = moment().startOf('day');
+            this.endDate = moment().endOf('day');
+            this.minDate = false;
+            this.maxDate = false;
+            this.dateLimit = false;
+
+            this.showDropdowns = false;
+            this.showWeekNumbers = false;
+            this.timePicker = false;
+            this.timePickerIncrement = 30;
+            this.timePicker12Hour = true;
+            this.singleDatePicker = false;
+            this.ranges = {};
+
+            this.opens = 'right';
+            if (this.element.hasClass('pull-right'))
+                this.opens = 'left';
+
+            this.buttonClasses = ['btn', 'btn-small'];
+            this.applyClass = 'btn-success';
+            this.cancelClass = 'btn-default';
+
+            this.format = 'YYYY-MM-DD';
+            this.separator = ' - ';
+
+            this.locale = {
+                applyLabel: '确定',
+                cancelLabel: '取消',
+                fromLabel: '从',
+                toLabel: '到',
+                weekLabel: 'W',
+                customRangeLabel: 'Custom Range',
+                daysOfWeek: moment()._lang._weekdaysMin.slice(),
+                monthNames: moment()._lang._monthsShort.slice(),
+                firstDay: 0
+            };
